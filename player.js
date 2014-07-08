@@ -4,9 +4,9 @@ void function(window){
     // 声明 webview 方法作用域
     window.wandoujia = window.wandoujia || {};
     // 向 Native 发送数据的接口 Object
-    var NativeCallback = window.wandoujia.NativeCallback || {};
-    // 为了调试方便，在浏览器上面没有这个方法
-    var sendToNative = NativeCallback.sendToNative || function() {};
+    var NativeCallback = window.NativeCallback || {};
+    // 该处 native 创建的方法必须直接调用，不能赋值给一个变量
+    NativeCallback.sendToNative = NativeCallback.sendToNative || function() {};
     // 全局的 audio dom 对象
     var audioDom;
     // 尝试 audioDom 是否创建成功
@@ -22,7 +22,7 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
-            sendToNative('onready');
+            NativeCallback.sendToNative('onready');
         }
         return audioDom;
     }
@@ -32,7 +32,7 @@ void function(window){
     // 播放相关方法，暴露给 native
     wandoujia.audio = {
         audioDom: audioDom,
-        hasVideo: function() {
+        hasAudio: function() {
             return !!audioDom;
         },
         play: function() {
@@ -44,15 +44,16 @@ void function(window){
     };
 
     // 需要的回调
-    videoDom.addEventListener('play', function() {
-        sendToNative('onplay');
+    audioDom.addEventListener('play', function() {
+        NativeCallback.sendToNative('onplay');
     });
 
-    videoDom.addEventListener('ended', function() {
-        sendToNative('onended');
+    audioDom.addEventListener('ended', function() {
+        NativeCallback.sendToNative('onended');
     });
     
-    videoDom.addEventListener('pause', function() {
-        sendToNative('onpause');
+    audioDom.addEventListener('pause', function() {
+        console.log('wangxiao');
+        NativeCallback.sendToNative('onpause');
     });
 }(window);
