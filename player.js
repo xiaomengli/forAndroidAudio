@@ -22,7 +22,10 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
-            NativeCallback.sendToNative('onready');
+            NativeCallback.sendToNative('onready', {
+                duration: audioDom.duration,
+                src: audioDom.src
+            });
         }
         return audioDom;
     }
@@ -40,20 +43,42 @@ void function(window){
         },
         pause: function() {
             audioDom.pause();
+        },
+        stop: function() {
+            audioDom.pause();
+            audioDom.currentTime = 0;
+        },
+        progress: function(time) {
+            if (arguments.length) {
+                audioDom.currentTime = Number(time);
+            } else {
+                NativeCallback.sendToNative('progress', {
+                    progress: audioDom.currentTime
+                });
+            }
+        },
+        duration: function() {
+            NativeCallback.sendToNative('duration', {
+                duration: audioDom.duration
+            });
         }
     };
 
     // 需要的回调
     audioDom.addEventListener('play', function() {
-        NativeCallback.sendToNative('onplay');
+        NativeCallback.sendToNative('onplay', '');
     });
 
     audioDom.addEventListener('ended', function() {
-        NativeCallback.sendToNative('onended');
+        NativeCallback.sendToNative('onended', '');
     });
     
     audioDom.addEventListener('pause', function() {
-        console.log('wangxiao');
-        NativeCallback.sendToNative('onpause');
+        NativeCallback.sendToNative('onpause', '');
     });
+
+    audioDom.addEventListener('error', function(data) {
+        NativeCallback.sendToNative('onerror', JSON.stringify(data));
+    });
+
 }(window);
