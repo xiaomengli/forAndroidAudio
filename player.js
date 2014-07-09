@@ -22,10 +22,10 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
-            NativeCallback.sendToNative('onready', {
+            NativeCallback.sendToNative('onready', JSON.stringify({
                 duration: audioDom.duration,
                 src: audioDom.src
-            });
+            }));
         }
         return audioDom;
     }
@@ -52,15 +52,15 @@ void function(window){
             if (arguments.length) {
                 audioDom.currentTime = Number(time);
             } else {
-                NativeCallback.sendToNative('progress', {
+                NativeCallback.sendToNative('progress', JSON.stringify({
                     progress: audioDom.currentTime
-                });
+                }));
             }
         },
         duration: function() {
-            NativeCallback.sendToNative('duration', {
+            NativeCallback.sendToNative('duration', JSON.stringify({
                 duration: audioDom.duration
-            });
+            }));
         }
     };
 
