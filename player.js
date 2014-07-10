@@ -10,7 +10,7 @@ void function(window){
     // 全局的 audio dom 对象
     var audioDom;
     // 尝试 audioDom 是否创建成功
-    var MAX_TIME = 10000;
+    var MAX_TIME = 50000;
     var timer = 0;
 
     function getAudioDom() {
@@ -22,10 +22,7 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
-            NativeCallback.sendToNative('onready', JSON.stringify({
-                duration: audioDom.duration,
-                src: audioDom.src
-            }));
+            bindEvent();
         }
         return audioDom;
     }
@@ -64,21 +61,33 @@ void function(window){
         }
     };
 
-    // 需要的回调
-    audioDom.addEventListener('play', function() {
-        NativeCallback.sendToNative('onplay', '');
-    });
+    function bindEvent() {
+        // 默认自动播放
+        audioDom.pause();
 
-    audioDom.addEventListener('ended', function() {
-        NativeCallback.sendToNative('onended', '');
-    });
-    
-    audioDom.addEventListener('pause', function() {
-        NativeCallback.sendToNative('onpause', '');
-    });
+        // 需要的回调
+        audioDom.addEventListener('loadedmetadata', function() {
+            NativeCallback.sendToNative('onready', JSON.stringify({
+                duration: audioDom.duration,
+                src: audioDom.src
+            }) );
+        });
 
-    audioDom.addEventListener('error', function(data) {
-        NativeCallback.sendToNative('onerror', JSON.stringify(data));
-    });
+        audioDom.addEventListener('play', function() {
+            NativeCallback.sendToNative('onplay', '');
+        });
+
+        audioDom.addEventListener('ended', function() {
+            NativeCallback.sendToNative('onended', '');
+        });
+        
+        audioDom.addEventListener('pause', function() {
+            NativeCallback.sendToNative('onpause', '');
+        });
+
+        audioDom.addEventListener('error', function(data) {
+            NativeCallback.sendToNative('onerror', JSON.stringify(data));
+        });
+    }
 
 }(window);
