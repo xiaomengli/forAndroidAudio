@@ -56,9 +56,15 @@ void function(window){
             }
         },
         duration: function() {
-            NativeCallback.sendToNative('duration', JSON.stringify({
-                duration: audioDom.duration
-            }));
+            if (audioDom.duration) {
+                NativeCallback.sendToNative('duration', JSON.stringify({
+                    duration: audioDom.duration
+                }));
+            } else {
+                setTimeout(function() {
+                    wandoujia.audio.duration();
+                }, 100);
+            }
         }
     };
 
@@ -68,9 +74,7 @@ void function(window){
 
         // 需要的回调
         audioDom.addEventListener('loadedmetadata', function() {
-            setTimeout(function() {
-                wandoujia.audio.duration();
-            }, 1000);
+            wandoujia.audio.duration();
         });
 
         audioDom.addEventListener('play', function() {
