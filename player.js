@@ -22,6 +22,7 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
+            NativeCallback.sendToNative('onready', '');
             bindEvent();
         }
         return audioDom;
@@ -63,14 +64,11 @@ void function(window){
 
     function bindEvent() {
         // 默认自动播放
-        audioDom.pause();
+        audioDom.play();
 
         // 需要的回调
         audioDom.addEventListener('loadedmetadata', function() {
-            NativeCallback.sendToNative('onready', JSON.stringify({
-                duration: audioDom.duration,
-                src: audioDom.src
-            }) );
+            wandoujia.audio.duration();
         });
 
         audioDom.addEventListener('play', function() {
