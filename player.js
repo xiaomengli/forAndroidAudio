@@ -68,7 +68,9 @@ void function(window){
 
         // 需要的回调
         audioDom.addEventListener('loadedmetadata', function() {
-            wandoujia.audio.duration();
+            setTimeout(function() {
+                wandoujia.audio.duration();
+            }, 1000);
         });
 
         audioDom.addEventListener('play', function() {
