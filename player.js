@@ -14,7 +14,7 @@ void function(window){
     // onready 的计时器
     var timer = 0;
     // Native 控制的播放状态，默认是关闭
-    var nativePaused = false;
+    var nativePaused = true;
 
     function getAudioDom() {
         audioDom = document.documentElement.getElementsByTagName('audio')[0];
@@ -83,8 +83,6 @@ void function(window){
     };
 
     function bindEvent() {
-        // 默认自动播放
-        audioDom.play();
 
         // 需要的回调
         audioDom.addEventListener('loadedmetadata', function() {
