@@ -11,7 +11,10 @@ void function(window){
     var audioDom;
     // 尝试 audioDom 是否创建成功
     var MAX_TIME = 50000;
+    // onready 的计时器
     var timer = 0;
+    // Native 控制的播放状态，默认是关闭
+    var nativePaused = false;
 
     function getAudioDom() {
         audioDom = document.documentElement.getElementsByTagName('audio')[0];
@@ -23,9 +26,17 @@ void function(window){
         }
         if (audioDom) {
             NativeCallback.sendToNative('onready', '');
+            loopPlayStatus();
             bindEvent();
         }
-        return audioDom;
+    }
+
+    function loopPlayStatus() {
+        setInterval(function() {
+            if (nativePaused) {
+                audioDom.pause();
+            }
+        }, 50);
     }
 
     getAudioDom();
@@ -37,12 +48,15 @@ void function(window){
             return !!audioDom;
         },
         play: function() {
+            nativePaused = false;
             audioDom.play();
         },
         pause: function() {
+            nativePaused = true;
             audioDom.pause();
         },
         stop: function() {
+            nativePaused = true;
             audioDom.pause();
             audioDom.currentTime = 0;
         },
