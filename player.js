@@ -26,6 +26,8 @@ void function(window){
         }
         if (audioDom) {
             NativeCallback.sendToNative('onready', '');
+            // 让 dom 元素自动加载一下 MP3 资源
+            audioDom.play();
             loopPlayStatus();
             bindEvent();
         }
