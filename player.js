@@ -26,8 +26,7 @@ void function(window){
         }
         if (audioDom) {
             NativeCallback.sendToNative('onready', '');
-            // 让 dom 元素自动加载一下 MP3 资源
-            audioDom.play();
+            simulatedClick();
             loopPlayStatus();
             bindEvent();
         }
@@ -39,6 +38,16 @@ void function(window){
                 audioDom.pause();
             }
         }, 50);
+    }
+
+    // 模拟用户点击
+    function simulatedClick() {
+        if (!audioDom.src) {
+            var mayBeEle = document.querySelector('a');
+            var customEvent = document.createEvent("MouseEvents"); 
+            customEvent.initEvent("click", false, false);
+            mayBeEle.dispatchEvent(customEvent);
+        }
     }
 
     getAudioDom();
