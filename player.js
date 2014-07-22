@@ -27,6 +27,7 @@ void function(window){
         if (audioDom) {
             NativeCallback.sendToNative('onready', '');
             simulatedClick();
+            // audioDom.preload = 'auto';
             loopPlayStatus();
             bindEvent();
         }
@@ -101,6 +102,7 @@ void function(window){
         });
 
         audioDom.addEventListener('play', function() {
+            nativePaused = false;
             NativeCallback.sendToNative('onplay', '');
         });
 
@@ -109,6 +111,7 @@ void function(window){
         });
         
         audioDom.addEventListener('pause', function() {
+            nativePaused = true;
             NativeCallback.sendToNative('onpause', '');
         });
 
@@ -118,3 +121,8 @@ void function(window){
     }
 
 }(window);
+
+// 相关替换
+// var str = 'return function() {this.dG();this.co = new Audio;this.fh = ["play", "pause", "ended", "playing", "progress", "loadeddata", "timeupdate", "error", "emptied"];bl.cz(this.fh, qV, this);this.pm = 0;this.jG = 0 }';
+// var result = str.match(/(([\w|.]*)\s*?=\s*?new\s*?Audio.*?)[;|,]/, 'g');
+// str.replace(result[1], result[1] + ',' + result[2] + '.style.opcity = 0,'+ result[2] +'.autoplay = false,'+ result[2] +'.preload="none",document.body.appendChild(' + result[2] +')');
