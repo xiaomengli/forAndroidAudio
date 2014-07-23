@@ -10,7 +10,7 @@ void function(window){
     // 全局的 audio dom 对象
     var audioDom;
     // 尝试 audioDom 是否创建成功
-    var MAX_TIME = 50000;
+    var MAX_TIME = 10000;
     // onready 的计时器
     var timer = 0;
     // Native 控制的播放状态，默认是关闭
@@ -18,11 +18,16 @@ void function(window){
 
     function getAudioDom() {
         audioDom = document.documentElement.getElementsByTagName('audio')[0];
-        if (!audioDom && (timer < MAX_TIME)) {
+        if (!audioDom && timer < MAX_TIME) {
             setTimeout(function() {
                 getAudioDom();
                 timer += 50;
             }, 50);
+        }
+        if (!audioDom && timer > MAX_TIME) {
+            NativeCallback.sendToNative('onerror', JSON.stringify({
+                error: 'timeout'
+            }));
         }
         if (audioDom) {
             NativeCallback.sendToNative('onready', JSON.stringify({
