@@ -16,6 +16,15 @@ void function(window){
     // Native 控制的播放状态，默认是关闭
     var nativePaused = true;
 
+    function extend(source, extendObj) {
+        if (!source) {
+            source = {};
+        }
+        for (var k in extendObj) {
+            source[k] = extendObj[k];
+        }
+    }
+
     function getAudioDom() {
         audioDom = document.documentElement.getElementsByTagName('audio')[0];
         if (!audioDom && timer < MAX_TIME) {
@@ -78,7 +87,7 @@ void function(window){
     getAudioDom();
 
     // 播放相关方法，暴露给 native
-    wandoujia.audio = {
+    extend(window.wandoujia.audio, {
         audioDom: audioDom,
         hasAudio: function() {
             return !!audioDom;
@@ -116,7 +125,7 @@ void function(window){
                 }, 100);
             }
         }
-    };
+    });
 
     function bindEvent() {
 
