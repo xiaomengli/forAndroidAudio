@@ -25,9 +25,10 @@ void function(window){
             }, 50);
         }
         if (audioDom) {
-            NativeCallback.sendToNative('onready', '');
+            NativeCallback.sendToNative('onready', JSON.stringify({
+                source: getSource()
+            }));
             simulatedClick();
-            // audioDom.preload = 'auto';
             loopPlayStatus();
             bindEvent();
         }
@@ -48,6 +49,24 @@ void function(window){
             var customEvent = document.createEvent("MouseEvents"); 
             customEvent.initEvent("click", false, false);
             mayBeEle.dispatchEvent(customEvent);
+        }
+    }
+
+    // 获取来源信息
+    function getSource() {
+        var obj = {
+            'kugou.com': 'kugou',
+            'duomi.com': 'duomi',
+            '163.com': '163',
+            'xiami.com': 'xiami',
+            'qq.com': 'qq',
+            'baidu.com': 'baidu',
+            'dongting.com': 'dongting'       
+        };
+        for (var k in obj) {
+            if (location.host.indexOf(k) !== -1) {
+                return obj[k];
+            }
         }
     }
 
