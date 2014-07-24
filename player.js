@@ -3,6 +3,7 @@ void function(window){
 
     // 声明 webview 方法作用域
     window.wandoujia = window.wandoujia || {};
+    window.wandoujia.audio = window.wandoujia.audio || {};
     // 向 Native 发送数据的接口 Object
     var NativeCallback = window.NativeCallback || {};
     // 该处 native 创建的方法必须直接调用，不能赋值给一个变量
@@ -136,7 +137,7 @@ void function(window){
         });
 
         audioDom.addEventListener('play', function() {
-            nativePaused = false;
+            nativePaused = false;            
             NativeCallback.sendToNative('onplay', '');
         });
 
