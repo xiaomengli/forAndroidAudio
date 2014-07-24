@@ -60,9 +60,10 @@ void function(window){
     function simulatedClick() {
         if (!audioDom.src) {
             var mayBeEle = document.querySelector('a');
-            var customEvent = document.createEvent("MouseEvents"); 
-            customEvent.initEvent("click", false, false);
+            var customEvent = document.createEvent('MouseEvents'); 
+            customEvent.initEvent('click', false, false);
             mayBeEle.dispatchEvent(customEvent);
+            setTimeout(simulatedClick, 50);
         }
     }
 
