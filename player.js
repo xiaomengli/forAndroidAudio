@@ -34,7 +34,7 @@ void function(window){
                 timer += 50;
             }, 50);
         }
-        if (!audioDom && timer > MAX_TIME) {
+        if (!audioDom && timer >= MAX_TIME) {
             NativeCallback.sendToNative('onerror', JSON.stringify({
                 error: 'timeout'
             }));
