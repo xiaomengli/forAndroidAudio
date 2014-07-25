@@ -84,7 +84,6 @@ void function(window){
             }
         }
     }
-
     getAudioDom();
 
     // 播放相关方法，暴露给 native
@@ -116,14 +115,25 @@ void function(window){
             }
         },
         duration: function() {
-            if (audioDom.duration) {
+            // if (audioDom.duration) {
+            //     NativeCallback.sendToNative('duration', JSON.stringify({
+            //         duration: audioDom.duration
+            //     }));
+            // } else {
+            //     setTimeout(function() {
+            //         wandoujia.audio.duration();
+            //     }, 100);
+            // }
+            var length = 50;
+            var old = audioDom.currentTime + length;
+            audioDom.currentTime += length;
+            if (audioDom.duration && old > audioDom.currentTime) {
                 NativeCallback.sendToNative('duration', JSON.stringify({
-                    duration: audioDom.duration
+                    duration: audioDom.currentTime
                 }));
+                audioDom.currentTime = 0;
             } else {
-                setTimeout(function() {
-                    wandoujia.audio.duration();
-                }, 100);
+                wandoujia.audio.duration();
             }
         }
     });
@@ -131,9 +141,9 @@ void function(window){
     function bindEvent() {
 
         // 需要的回调
-        audioDom.addEventListener('loadedmetadata', function() {
-            wandoujia.audio.duration();
-        });
+        // audioDom.addEventListener('loadedmetadata', function() {
+        //     wandoujia.audio.duration();
+        // });
 
         audioDom.addEventListener('play', function() {
             NativeCallback.sendToNative('onplay', '');
