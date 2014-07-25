@@ -17,75 +17,6 @@ void function(window){
     // 是否通过 native 控制已经播放一次
     var firstPlay = false;
 
-    function extend(source, extendObj) {
-        if (!source) {
-            source = {};
-        }
-        for (var k in extendObj) {
-            source[k] = extendObj[k];
-        }
-    }
-
-    function getAudioDom() {
-        audioDom = document.documentElement.getElementsByTagName('audio')[0];
-        if (!audioDom && timer < MAX_TIME) {
-            setTimeout(function() {
-                getAudioDom();
-                timer += 50;
-            }, 50);
-        }
-        if (!audioDom && timer >= MAX_TIME) {
-            NativeCallback.sendToNative('onerror', JSON.stringify({
-                error: 'timeout'
-            }));
-        }
-        if (audioDom) {
-            NativeCallback.sendToNative('onready', JSON.stringify({
-                source: getSource()
-            }));
-            simulatedClick();
-            loopPlayStatus();
-            bindEvent();
-        }
-    }
-
-    function loopPlayStatus() {
-        if (!firstPlay) {
-            audioDom.pause();
-            setTimeout(loopPlayStatus, 50);
-        }
-    }
-
-    // 模拟用户点击
-    function simulatedClick() {
-        if (!audioDom.src) {
-            var mayBeEle = document.querySelector('a');
-            var customEvent = document.createEvent('MouseEvents'); 
-            customEvent.initEvent('click', false, false);
-            mayBeEle.dispatchEvent(customEvent);
-            setTimeout(simulatedClick, 50);
-        }
-    }
-
-    // 获取来源信息
-    function getSource() {
-        var obj = {
-            'kugou.com': 'kugou',
-            'duomi.com': 'duomi',
-            '163.com': '163',
-            'xiami.com': 'xiami',
-            'qq.com': 'qq',
-            'baidu.com': 'baidu',
-            'dongting.com': 'dongting'       
-        };
-        for (var k in obj) {
-            if (location.host.indexOf(k) !== -1) {
-                return obj[k];
-            }
-        }
-    }
-    getAudioDom();
-
     // 播放相关方法，暴露给 native
     extend(window.wandoujia.audio, {
         audioDom: audioDom,
@@ -128,8 +59,9 @@ void function(window){
             var old = audioDom.currentTime + length;
             audioDom.currentTime += length;
             if (audioDom.duration && old > audioDom.currentTime) {
+                console.log(Math.max(audioDom.currentTime, audioDom.duration));
                 NativeCallback.sendToNative('duration', JSON.stringify({
-                    duration: audioDom.currentTime
+                    duration: Math.max(audioDom.currentTime, audioDom.duration)
                 }));
                 audioDom.currentTime = 0;
             } else {
@@ -161,6 +93,76 @@ void function(window){
             NativeCallback.sendToNative('onerror', JSON.stringify(data));
         });
     }
+
+    function extend(source, extendObj) {
+        if (!source) {
+            source = {};
+        }
+        for (var k in extendObj) {
+            source[k] = extendObj[k];
+        }
+    }
+
+    function getAudioDom() {
+        audioDom = document.documentElement.getElementsByTagName('audio')[0];
+        if (!audioDom && timer < MAX_TIME) {
+            setTimeout(function() {
+                getAudioDom();
+                timer += 50;
+            }, 50);
+        }
+        if (!audioDom && timer >= MAX_TIME) {
+            NativeCallback.sendToNative('onerror', JSON.stringify({
+                error: 'timeout'
+            }));
+        }
+        if (audioDom) {
+            NativeCallback.sendToNative('onready', JSON.stringify({
+                source: getSource()
+            }));
+            simulatedClick();
+            loopPlayStatus();
+            wandoujia.audio.duration();
+            bindEvent();
+        }
+    }
+
+    function loopPlayStatus() {
+        if (!firstPlay) {
+            audioDom.pause();
+            setTimeout(loopPlayStatus, 50);
+        }
+    }
+
+    // 模拟用户点击
+    function simulatedClick() {
+        if (!audioDom.src) {
+            var mayBeEle = document.querySelector('a');
+            var customEvent = document.createEvent('MouseEvents'); 
+            customEvent.initEvent('click', false, false);
+            mayBeEle.dispatchEvent(customEvent);
+            setTimeout(simulatedClick, 50);
+        }
+    }
+
+    // 获取来源信息
+    function getSource() {
+        var obj = {
+            'kugou.com': 'kugou',
+            'duomi.com': 'duomi',
+            '163.com': '163',
+            'xiami.com': 'xiami',
+            'qq.com': 'qq',
+            'baidu.com': 'baidu',
+            'dongting.com': 'dongting'       
+        };
+        for (var k in obj) {
+            if (location.host.indexOf(k) !== -1) {
+                return obj[k];
+            }
+        }
+    }
+    getAudioDom();
 
 }(window);
 
