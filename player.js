@@ -14,8 +14,8 @@ void function(window){
     var MAX_TIME = 10000;
     // onready 的计时器
     var timer = 0;
-    // Native 控制的播放状态，默认是关闭
-    var nativePaused = true;
+    // 是否通过 native 控制已经播放一次
+    var firstPlay = false;
 
     function extend(source, extendObj) {
         if (!source) {
@@ -50,11 +50,10 @@ void function(window){
     }
 
     function loopPlayStatus() {
-        setInterval(function() {
-            if (nativePaused) {
-                audioDom.pause();
-            }
-        }, 50);
+        if (!firstPlay) {
+            audioDom.pause();
+            setTimeout(loopPlayStatus, 50);
+        }
     }
 
     // 模拟用户点击
@@ -95,15 +94,15 @@ void function(window){
             return !!audioDom;
         },
         play: function() {
-            nativePaused = false;
+            if (!firstPlay) {
+                firstPlay = true;
+            }
             audioDom.play();
         },
         pause: function() {
-            nativePaused = true;
             audioDom.pause();
         },
         stop: function() {
-            nativePaused = true;
             audioDom.pause();
             audioDom.currentTime = 0;
         },
@@ -137,7 +136,6 @@ void function(window){
         });
 
         audioDom.addEventListener('play', function() {
-            nativePaused = false;            
             NativeCallback.sendToNative('onplay', '');
         });
 
@@ -146,7 +144,6 @@ void function(window){
         });
         
         audioDom.addEventListener('pause', function() {
-            nativePaused = true;
             NativeCallback.sendToNative('onpause', '');
         });
 
