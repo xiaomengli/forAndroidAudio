@@ -46,20 +46,10 @@ void function(window){
             }
         },
         duration: function() {
-            // if (audioDom.duration) {
-            //     NativeCallback.sendToNative('duration', JSON.stringify({
-            //         duration: audioDom.duration
-            //     }));
-            // } else {
-            //     setTimeout(function() {
-            //         wandoujia.audio.duration();
-            //     }, 100);
-            // }
             var length = 50;
             var old = audioDom.currentTime + length;
             audioDom.currentTime += length;
             if (audioDom.duration && old > audioDom.currentTime) {
-                console.log(Math.max(audioDom.currentTime, audioDom.duration));
                 NativeCallback.sendToNative('duration', JSON.stringify({
                     duration: Math.max(audioDom.currentTime, audioDom.duration)
                 }));
