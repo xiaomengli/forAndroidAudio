@@ -7,13 +7,42 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1">
     <meta name="viewport" content="width=device-width">
     <meta name="apple-mobile-web-app-capable" content="no"/>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <style type="text/css">
+    #player-cover {
+        width: 100%;
+    }
+    #player-audio {
+        opacity: 0;
+        position: absolute;
+    }
+    </style>
 </head>
 <body>
     <div id="player">
         <img id="player-cover">
         <audio id="player-audio">
     </div>
-    <script type="text/javascript" src="main.js"></script>
+<script type="text/javascript">
+void function() {
+    window.wandoujia = window.wandoujia || {};
+    window.wandoujia.audio = window.wandoujia.audio || {};
+    var cover = document.querySelector('#player-cover');
+    var audio = document.querySelector('#player-audio');
+    function extend(source, extendObj) {
+        if (!source) {
+            source = {};
+        }
+        for (var k in extendObj) {
+            source[k] = extendObj[k];
+        }
+    }
+    extend(window.wandoujia.audio, {
+        playerInit: function(opts) {
+            audio.src = opts.audioSrc;
+            cover.src = opts.imageSrc;
+        }
+    });
+}();
+</script>
 </body>
 </html>
