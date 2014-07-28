@@ -17,6 +17,15 @@ void function(window){
     // 是否通过 native 控制已经播放一次
     var firstPlay = false;
 
+    function extend(source, extendObj) {
+        if (!source) {
+            source = {};
+        }
+        for (var k in extendObj) {
+            source[k] = extendObj[k];
+        }
+    }
+
     // 播放相关方法，暴露给 native
     extend(window.wandoujia.audio, {
         audioDom: audioDom,
@@ -47,15 +56,21 @@ void function(window){
         },
         duration: function() {
             var length = 50;
-            var old = audioDom.currentTime + length;
-            audioDom.currentTime += length;
-            if (audioDom.duration && old > audioDom.currentTime) {
-                NativeCallback.sendToNative('duration', JSON.stringify({
-                    duration: Math.max(audioDom.currentTime, audioDom.duration)
-                }));
-                audioDom.currentTime = 0;
+            if (audioDom.currentTime) {
+                var old = audioDom.currentTime + length;
+                audioDom.currentTime += length;
+                if (audioDom.duration && old > audioDom.currentTime) {
+                    NativeCallback.sendToNative('duration', JSON.stringify({
+                        duration: Math.max(audioDom.currentTime, audioDom.duration)
+                    }));
+                    audioDom.currentTime = 0;
+                } else {
+                    wandoujia.audio.duration();
+                }
             } else {
-                wandoujia.audio.duration();
+                setTimeout(function() {
+                    wandoujia.audio.duration();
+                }, 100); 
             }
         }
     });
@@ -82,15 +97,6 @@ void function(window){
         audioDom.addEventListener('error', function(data) {
             NativeCallback.sendToNative('onerror', JSON.stringify(data));
         });
-    }
-
-    function extend(source, extendObj) {
-        if (!source) {
-            source = {};
-        }
-        for (var k in extendObj) {
-            source[k] = extendObj[k];
-        }
     }
 
     function getAudioDom() {
