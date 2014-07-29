@@ -37,9 +37,15 @@ void function(window){
                 firstPlay = true;
             }
             audioDom.play();
+            NativeCallback.sendToNative('onplay', JSON.stringify({
+                isUser: true
+            }));
         },
         pause: function() {
             audioDom.pause();
+            NativeCallback.sendToNative('onpause', JSON.stringify({
+                isUser: true
+            }));
         },
         stop: function() {
             audioDom.pause();
@@ -83,7 +89,9 @@ void function(window){
         // });
 
         audioDom.addEventListener('play', function() {
-            NativeCallback.sendToNative('onplay', '');
+            NativeCallback.sendToNative('onplay', JSON.stringify({
+                isUser: false
+            }));
         });
 
         audioDom.addEventListener('ended', function() {
@@ -91,7 +99,9 @@ void function(window){
         });
         
         audioDom.addEventListener('pause', function() {
-            NativeCallback.sendToNative('onpause', '');
+            NativeCallback.sendToNative('onpause', {
+                isUser: false
+            });
         });
 
         audioDom.addEventListener('error', function(data) {
