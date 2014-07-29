@@ -16,6 +16,8 @@ void function(window){
     var timer = 0;
     // 是否通过 native 控制已经播放一次
     var firstPlay = false;
+    // 标记是否是用户触发
+    var isUserFlag = false;
 
     function extend(source, extendObj) {
         if (!source) {
@@ -36,16 +38,12 @@ void function(window){
             if (!firstPlay) {
                 firstPlay = true;
             }
+            isUserFlag = true;
             audioDom.play();
-            NativeCallback.sendToNative('onplay', JSON.stringify({
-                isUser: true
-            }));
         },
         pause: function() {
+            isUserFlag = true;
             audioDom.pause();
-            NativeCallback.sendToNative('onpause', JSON.stringify({
-                isUser: true
-            }));
         },
         stop: function() {
             audioDom.pause();
@@ -90,8 +88,9 @@ void function(window){
 
         audioDom.addEventListener('play', function() {
             NativeCallback.sendToNative('onplay', JSON.stringify({
-                isUser: false
+                isUser: isUserFlag
             }));
+            isUserFlag = false;
         });
 
         audioDom.addEventListener('ended', function() {
@@ -100,8 +99,9 @@ void function(window){
         
         audioDom.addEventListener('pause', function() {
             NativeCallback.sendToNative('onpause', {
-                isUser: false
+                isUser: isUserFlag
             });
+            isUserFlag = false;
         });
 
         audioDom.addEventListener('error', function(data) {
