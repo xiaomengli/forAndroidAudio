@@ -1,6 +1,5 @@
 // 闭包，避免影响外层代码
 void function(window){
-
     // 声明 webview 方法作用域
     window.wandoujia = window.wandoujia || {};
     window.wandoujia.audio = window.wandoujia.audio || {};
@@ -98,10 +97,12 @@ void function(window){
         });
         
         audioDom.addEventListener('pause', function() {
-            NativeCallback.sendToNative('onpause', JSON.stringify({
-                isUser: isUserFlag
-            }));
-            isUserFlag = true;
+            if (firstPlay) {
+                NativeCallback.sendToNative('onpause', JSON.stringify({
+                    isUser: isUserFlag
+                }));
+                isUserFlag = true;
+            }
         });
 
         audioDom.addEventListener('error', function(data) {
