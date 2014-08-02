@@ -93,7 +93,9 @@ void function(window){
         });
 
         audioDom.addEventListener('ended', function() {
-            NativeCallback.sendToNative('onended', '');
+            if (firstPlay && audioDom.duration) {
+                NativeCallback.sendToNative('onended', '');
+            }
         });
         
         audioDom.addEventListener('pause', function() {
@@ -135,7 +137,7 @@ void function(window){
     }
 
     function loopPlayStatus() {
-        if (!firstPlay) {
+        if (!firstPlay && !audioDom.paused) {
             audioDom.pause();
             setTimeout(loopPlayStatus, 50);
         }
