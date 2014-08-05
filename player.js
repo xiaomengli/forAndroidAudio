@@ -10,13 +10,15 @@ void function(window){
     // 全局的 audio dom 对象
     var audioDom;
     // 尝试 audioDom 是否创建成功
-    var MAX_TIME = 20000;
+    var MAX_TIME = 5000;
     // onready 的计时器
     var timer = 0;
     // 是否通过 native 控制已经播放一次
     var firstPlay = false;
     // 标记是否是用户触发
     var isUserFlag = true;
+    // 存储 duration
+    var duration = 0;
 
     function extend(source, extendObj) {
         if (!source) {
@@ -46,7 +48,7 @@ void function(window){
         },
         stop: function() {
             audioDom.pause();
-            audioDom.currentTime = 0;
+            audioDom.currentTime = 1;
         },
         progress: function(time) {
             if (arguments.length) {
@@ -58,16 +60,23 @@ void function(window){
             }
         },
         duration: function() {
-            if (audioDom.duration) {
-                setTimeout(function() {
+            var length = 50;
+            if (audioDom.currentTime) {
+                var old = audioDom.currentTime + length;
+                audioDom.currentTime += length;
+                if (audioDom.duration && old > audioDom.currentTime) {
+                    duration = Math.max(audioDom.currentTime, audioDom.duration);
                     NativeCallback.sendToNative('duration', JSON.stringify({
-                        duration: audioDom.duration
+                        duration: duration
                     }));
-                }, 500);
+                    audioDom.currentTime = 1;
+                } else {
+                    wandoujia.audio.duration();
+                }
             } else {
                 setTimeout(function() {
                     wandoujia.audio.duration();
-                }, 100);
+                }, 100); 
             }
         }
     });
@@ -87,7 +96,7 @@ void function(window){
         });
 
         audioDom.addEventListener('ended', function() {
-            if (firstPlay && audioDom.duration) {
+            if (firstPlay && duration) {
                 NativeCallback.sendToNative('onended', '');
             }
         });
@@ -120,18 +129,22 @@ void function(window){
             }));
         }
         if (audioDom) {
-            NativeCallback.sendToNative('onready', JSON.stringify({
-                source: getSource()
-            }));
             simulatedClick();
             loopPlayStatus();
             wandoujia.audio.duration();
             bindEvent();
+            setTimeout(function() {
+                if (audioDom.paused) {
+                    NativeCallback.sendToNative('onready', JSON.stringify({
+                        source: getSource()
+                    }));
+                }
+            }, 1000);
         }
     }
 
     function loopPlayStatus() {
-        if (!firstPlay && !audioDom.paused) {
+        if (audioDom.src && !firstPlay && !audioDom.paused) {
             audioDom.pause();
             setTimeout(loopPlayStatus, 50);
         }
@@ -139,12 +152,15 @@ void function(window){
 
     // 模拟用户点击
     function simulatedClick() {
-        if (!audioDom.src) {
-            var mayBeEle = document.querySelector('a');
-            var customEvent = document.createEvent('MouseEvents'); 
-            customEvent.initEvent('click', false, false);
-            mayBeEle.dispatchEvent(customEvent);
-            setTimeout(simulatedClick, 50);
+        var blackList = ['163.com'];
+        for (var i = 0, l = blackList.length; i < l; i ++) {
+            if (location.host.indexOf(blackList[i]) !== -1 && !audioDom.src) {
+                var mayBeEle = document.querySelector('a');
+                var customEvent = document.createEvent('MouseEvents'); 
+                customEvent.initEvent('click', false, false);
+                mayBeEle.dispatchEvent(customEvent);
+                setTimeout(simulatedClick, 50);
+            }
         }
     }
 
@@ -165,6 +181,7 @@ void function(window){
             }
         }
     }
+
     getAudioDom();
 
 }(window);
