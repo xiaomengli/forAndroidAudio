@@ -10,7 +10,7 @@ void function(window){
     // 全局的 audio dom 对象
     var audioDom;
     // 尝试 audioDom 是否创建成功
-    var MAX_TIME = 10000;
+    var MAX_TIME = 20000;
     // onready 的计时器
     var timer = 0;
     // 是否通过 native 控制已经播放一次
@@ -58,22 +58,16 @@ void function(window){
             }
         },
         duration: function() {
-            var length = 50;
-            if (audioDom.currentTime) {
-                var old = audioDom.currentTime + length;
-                audioDom.currentTime += length;
-                if (audioDom.duration && old > audioDom.currentTime) {
+            if (audioDom.duration) {
+                setTimeout(function() {
                     NativeCallback.sendToNative('duration', JSON.stringify({
-                        duration: Math.max(audioDom.currentTime, audioDom.duration)
+                        duration: audioDom.duration
                     }));
-                    audioDom.currentTime = 0;
-                } else {
-                    wandoujia.audio.duration();
-                }
+                }, 500);
             } else {
                 setTimeout(function() {
                     wandoujia.audio.duration();
-                }, 100); 
+                }, 100);
             }
         }
     });
@@ -81,9 +75,9 @@ void function(window){
     function bindEvent() {
 
         // 需要的回调
-        // audioDom.addEventListener('loadedmetadata', function() {
-        //     wandoujia.audio.duration();
-        // });
+        audioDom.addEventListener('loadedmetadata', function() {
+            wandoujia.audio.duration();
+        });
 
         audioDom.addEventListener('play', function() {
             NativeCallback.sendToNative('onplay', JSON.stringify({
