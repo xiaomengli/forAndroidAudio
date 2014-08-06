@@ -64,7 +64,7 @@ void function(window){
             if (audioDom.currentTime) {
                 var old = audioDom.currentTime + length;
                 audioDom.currentTime += length;
-                if (audioDom.duration && old > audioDom.currentTime) {
+                if (audioDom.duration > 10 && old > audioDom.currentTime) {
                     duration = Math.max(audioDom.currentTime, audioDom.duration);
                     NativeCallback.sendToNative('duration', JSON.stringify({
                         duration: duration
