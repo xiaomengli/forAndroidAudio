@@ -19,8 +19,10 @@
         background: url('default-cover.png') 50% 50% no-repeat;
     }
     #player-cover {
+        height: 100%;
         width: 100%;
         position: absolute;
+        background: url('default-cover.png') 50% 50% no-repeat;
     }
     #player-audio {
         opacity: 0;
@@ -30,7 +32,7 @@
 </head>
 <body>
     <div id="player">
-        <img id="player-cover">
+        <div id="player-cover"></div>
         <audio id="player-audio">
     </div>
 <script type="text/javascript">
@@ -50,7 +52,7 @@ void function() {
     extend(window.wandoujia.audio, {
         playerInit: function(opts) {
             audio.src = opts.audioSrc;
-            cover.src = opts.imageSrc;
+            cover.style.backgroundImage = 'url(\'' + opts.imageSrc + '\')';
         }
     });
 }();
