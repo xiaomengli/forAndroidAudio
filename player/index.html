@@ -16,14 +16,16 @@
         width: 100%;
         height: 101%;
         position: absolute;
-        background: url('default-cover.png') 50% 50% no-repeat;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArwAAAK8BAMAAAD/lHFwAAAAKlBMVEX09PTn5+fx8fHq6urt7e3w8PDp6eno6Ojz8/Py8vLu7u7s7Ozv7+/r6+soRSgpAAADtklEQVR4XuzAMQEAAADCIPuntsYOWAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnL07dm0qiuIAXGpTk7SCt7YNWgq2gqAiGBRx1EFwtIK42kV0EHwuTkJA0MFFRXRx0ElHXVxcLIoIXQwO/js6NZSGnPBuHg7vO/zWZPh43PvOPRdeN02mDqLEixcvXrx48eLFixcvXrx4BS9evHjx4sWLFy9evHjx4hW8u4MXr+DFixcvXrx48eLFixcvXrwKL168ePHixYsXL168ePHixbuyXqJOjsmLd7EMQAMvXrz/NXjxKrx48eLFixcvXrx48eLFi1fw4sWLFy9evHjx4sWLFy9ewYsXL168ePHixYsXL168ePHixYtX8OLFixcvXrx48eLFixcvXsGLFy9evHjxtr7/vjWos18myYv3VOHDCtXx/kipMl68x1J1vHhnUnW8eJvdCnnxvkrV8eJtFRXy4n2c8I6T1ov1nTrRG5u3j3eMvPm8qzPoFGPythPeON+G48S8r/HGeZ/K8vbxhjmeyvJOJ7xR2kVp3jm8UZr9VJr3Cd4oj1J53i28UboZvH28QQ6kDN4Cb5B3GbytABdvq8jgbeANsi9l8M7jDbKRw9vGG6SbwzuDd3SmE94KM5eqXRzu1Zt3f8W8N+vNu5aqfXM4o6kozzsd8n6sN++nLN5m2BS/NREOeLN+frXevEUe76VAt9MLAPDm7IyrU/WulMc7G/Au5QDgnc977bU4HBkJ0Nwczfu15rybMW/GsO2QQVtQSznHxQsBgLbicM6w42Ldebdyj7w2rA0j8jzi/TVV/ork7drzzmYcGkSN2/Kz2vPOZHS10eN7wfW9Vn5XeyMNr5Ue3uga00LpK4Cdfy2FWsufNjS6w3SvhABmmZ2xdqfGn73b2ge08cBhccw/2d7dXHfOHSU76AvyJ5HN9euDurbzzKt27togZQc69ysEsLl1qlxB3XW4w2YCaRTDdVe1XRPJ06G6y9quCeX0sIVXYzCxvNwzc3v4k8rk0to+XwxsH9y93PvbDhwIAAAAAAjan3qRCgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKABzoZS2FQBJcAAAAAASUVORK5CYII=') 50% 50% no-repeat;
+        overflow: hidden;
     }
     #player-cover {
         height: 101%;
         width: 100%;
         position: absolute;
-        background: url('default-cover.png') 50% 0% no-repeat;
+        background: url('') 50% 0% no-repeat;
         background-size: cover;
+        overflow: hidden;
     }
     #player-audio {
         opacity: 0;
@@ -56,6 +58,12 @@ void function() {
             cover.style.backgroundImage = 'url(\'' + opts.imageSrc + '\')';
         }
     });
+    // function encodeAudioSrc(str) {
+    //     var arr = str.match(/\/([^/]*?)$/, 'g');
+    //     var name = encodeURIComponent(arr[1]);
+    //     str.replace(arr[1], name);
+    //     return str;
+    // }
 }();
 </script>
 </body>
