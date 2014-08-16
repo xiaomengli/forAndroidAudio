@@ -16,9 +16,7 @@ void function(window){
     // 是否通过 native 控制已经播放一次
     var firstPlay = false;
     // 标记是否是用户触发
-    var isUserFlag = true;
-    // 存储 duration
-    var duration = 0;
+    var isUserFlag = false;
 
     function extend(source, extendObj) {
         if (!source) {
@@ -58,27 +56,6 @@ void function(window){
                     progress: audioDom.currentTime
                 }));
             }
-        },
-        duration: function() {
-            var length = 50;
-            if (audioDom.currentTime) {
-                var old = audioDom.currentTime + length;
-                audioDom.currentTime += length;
-                audioDom.pause();
-                if (audioDom.duration > 10 && old > audioDom.currentTime) {
-                    duration = Math.max(audioDom.currentTime, audioDom.duration);
-                    NativeCallback.sendToNative('duration', JSON.stringify({
-                        duration: duration
-                    }));
-                    audioDom.currentTime = 1;
-                } else {
-                    wandoujia.audio.duration();
-                }
-            } else {
-                setTimeout(function() {
-                    wandoujia.audio.duration();
-                }, 100); 
-            }
         }
     });
 
@@ -86,7 +63,6 @@ void function(window){
 
         // 需要的回调
         audioDom.addEventListener('loadedmetadata', function() {
-            wandoujia.audio.duration();
         });
 
         audioDom.addEventListener('play', function() {
@@ -97,7 +73,7 @@ void function(window){
         });
 
         audioDom.addEventListener('ended', function() {
-            if (firstPlay && duration) {
+            if (firstPlay) {
                 NativeCallback.sendToNative('onended', '');
             }
         });
@@ -114,55 +90,79 @@ void function(window){
         audioDom.addEventListener('error', function(data) {
             NativeCallback.sendToNative('onerror', JSON.stringify(data));
         });
+
+        audioDom.addEventListener('durationchange', function() {
+            NativeCallback.sendToNative('duration', JSON.stringify({
+                duration: audioDom.duration
+            }));
+        });
     }
 
     function getAudioDom() {
         audioDom = document.documentElement.getElementsByTagName('audio')[0];
-        if (!audioDom && timer < MAX_TIME) {
-            setTimeout(function() {
-                getAudioDom();
-                timer += 50;
-            }, 50);
-        }
-        if (!audioDom && timer >= MAX_TIME) {
-            NativeCallback.sendToNative('onerror', JSON.stringify({
-                error: 'timeout'
-            }));
-        }
+        
         if (audioDom) {
-            simulatedClick();
-            loopPlayStatus();
-            wandoujia.audio.duration();
-            bindEvent();
-            setTimeout(function() {
-                if (audioDom.paused) {
+            window.wandoujia.audio.audioDom = audioDom;
+            readyToPlay();
+        } else {
+            if (timer < MAX_TIME) {
+                setTimeout(function() {
+                    getAudioDom();
+                    timer += 50;
+                }, 50);
+            } else {
+                NativeCallback.sendToNative('onerror', JSON.stringify({
+                    error: 'timeout'
+                }));
+            }
+        }
+    }
+
+    // 模拟用户点击 and ready to play, send status 'ready' to native
+    function readyToPlay() {
+        var triggerPlay = function() {
+            var blackList = ['163.com'];
+            for (var i = 0, l = blackList.length; i < l; i ++) {
+                if (location.host.indexOf(blackList[i]) !== -1 && !audioDom.src) {
+                    var mayBeEle = document.querySelector('a');
+                    var customEvent = document.createEvent('MouseEvents'); 
+                    customEvent.initEvent('click', false, false);
+                    mayBeEle.dispatchEvent(customEvent);
+                }
+            }
+        };
+
+        triggerPlay();
+
+        var MAX_TIMES = 10;
+        var times = 1;
+        var triggerOnReady = function() {
+            if (!audioDom.src || audioDom.src.length === 0) {
+                triggerPlay();
+                setTimeout(function() {
+                    times += 1;
+                    if (times >= MAX_TIMES) {
+                    } else {
+                        triggerOnReady();
+                    }
+                }, 50);
+                
+            } else {
+
+                if (audioDom.src && !firstPlay ) { //&& !audioDom.paused
+                    audioDom.pause();
+                }
+                bindEvent();
+                if (audioDom.paused && !isUserFlag) {
                     NativeCallback.sendToNative('onready', JSON.stringify({
                         source: getSource()
                     }));
                 }
-            }, 1000);
-        }
-    }
-
-    function loopPlayStatus() {
-        if (audioDom.src && !firstPlay && !audioDom.paused) {
-            audioDom.pause();
-            setTimeout(loopPlayStatus, 50);
-        }
-    }
-
-    // 模拟用户点击
-    function simulatedClick() {
-        var blackList = ['163.com'];
-        for (var i = 0, l = blackList.length; i < l; i ++) {
-            if (location.host.indexOf(blackList[i]) !== -1 && !audioDom.src) {
-                var mayBeEle = document.querySelector('a');
-                var customEvent = document.createEvent('MouseEvents'); 
-                customEvent.initEvent('click', false, false);
-                mayBeEle.dispatchEvent(customEvent);
-                setTimeout(simulatedClick, 50);
             }
         }
+        setTimeout(function() {
+            triggerOnReady();
+        }, 50);
     }
 
     // 获取来源信息
@@ -183,11 +183,22 @@ void function(window){
         }
     }
 
+    var hackQQDownload = function() {
+        var QQList = ['qq.com'];
+        for (var i = 0, l = QQList.length; i < l; i ++) {
+            if (location.host.indexOf(QQList[i]) !== -1) {
+                var el = document.getElementById('lrc_js'),
+                elClone = el.cloneNode(true);
+                el.parentNode.replaceChild(elClone, el);
+
+                document.getElementById('lrc_js').addEventListener('click', function() {
+                    downQQMusic();
+                });
+            }
+        }
+    }
+
+    hackQQDownload();
     getAudioDom();
 
 }(window);
-
-// 相关替换
-// var str = 'return function() {this.dG();this.co = new Audio;this.fh = ["play", "pause", "ended", "playing", "progress", "loadeddata", "timeupdate", "error", "emptied"];bl.cz(this.fh, qV, this);this.pm = 0;this.jG = 0 }';
-// var result = str.match(/(([\w|.]*)\s*?=\s*?new\s*?Audio.*?)[;|,]/, 'g');
-// str.replace(result[1], result[1] + ',' + result[2] + '.style.opcity = 0,'+ result[2] +'.autoplay = false,'+ result[2] +'.preload="none",document.body.appendChild(' + result[2] +')');
